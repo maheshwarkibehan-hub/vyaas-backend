@@ -114,7 +114,35 @@ export const WelcomeView = ({
   }, []);
 
   const handleGetStarted = async () => {
+    alert('Debug: Button Clicked'); // Debug
+
+    // 1. Test Server Connectivity
+    try {
+      const healthUrl = 'https://vyaas-backend.onrender.com/';
+      // alert('Debug: Testing Connectivity to ' + healthUrl);
+
+      // Try Normal Fetch
+      try {
+        const res = await fetch(healthUrl);
+        if (!res.ok) throw new Error('Server returned ' + res.status);
+        const data = await res.json();
+        alert('Debug: Server is Reachable! ' + JSON.stringify(data));
+      } catch (normalError) {
+        // Try No-CORS Fetch (to check if it's CORS or Network)
+        alert('Debug: Normal Fetch Failed. Trying no-cors...');
+        await fetch(healthUrl, { mode: 'no-cors' });
+        alert('Debug: No-CORS worked! This is a CORS Issue.');
+        throw normalError; // Re-throw original error
+      }
+
+    } catch (e) {
+      const err = e as Error;
+      alert(`Debug: SERVER UNREACHABLE (Even with no-cors)!\nURL: ${process.env.NEXT_PUBLIC_BACKEND_URL}\nError: ${err.message}`);
+      return; // Stop here
+    }
+
     if (!isAuthenticated) {
+      alert('Debug: Not Authenticated, Opening Modal'); // Debug
       openAuthModal();
       return;
     }
@@ -122,15 +150,20 @@ export const WelcomeView = ({
     // Check if user is blocked before starting session
     if (auth.currentUser) {
       setCheckingBlock(true);
-      const blocked = await isUserBlocked(auth.currentUser.uid);
-      setCheckingBlock(false);
-
-      if (blocked) {
-        setIsBlocked(true);
-        return; // Don't logout, just show modal
+      try {
+        const blocked = await isUserBlocked(auth.currentUser.uid);
+        if (blocked) {
+          setIsBlocked(true);
+          return;
+        }
+      } catch (e) {
+        alert('Debug: Block Check Failed: ' + e);
+      } finally {
+        setCheckingBlock(false);
       }
     }
 
+    alert('Debug: Starting Call'); // Debug
     onStartCall();
   };
 

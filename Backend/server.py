@@ -21,7 +21,15 @@ app = FastAPI()
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for now (needed for Capacitor)
+    allow_origins=[
+        "http://localhost",
+        "http://localhost:3000",
+        "https://vyaas-backend.onrender.com",
+        "https://vyaas-ai.vercel.app",
+        "capacitor://localhost",
+        "http://192.168.1.1",
+        "*" # Fallback for now, but explicit is better
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
