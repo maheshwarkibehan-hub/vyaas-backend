@@ -10,6 +10,7 @@ import {
   useVoiceAssistant,
 } from '@livekit/components-react';
 import { cn } from '@/lib/utils';
+import { useResponsive } from '@/lib/responsive-utils';
 
 const MotionContainer = motion.create('div');
 
@@ -81,6 +82,7 @@ export function TileLayout({ chatOpen }: TileLayoutProps) {
   } = useVoiceAssistant();
   const [screenShareTrack] = useTracks([Track.Source.ScreenShare]);
   const cameraTrack: TrackReference | undefined = useLocalTrackRef(Track.Source.Camera);
+  const { isMobile, isTablet } = useResponsive();
 
   const isCameraEnabled = cameraTrack && !cameraTrack.publication.isMuted;
   const isScreenShareEnabled = screenShareTrack && !screenShareTrack.publication.isMuted;
@@ -90,6 +92,9 @@ export function TileLayout({ chatOpen }: TileLayoutProps) {
   const isAvatar = agentVideoTrack !== undefined;
   const videoWidth = agentVideoTrack?.publication.dimensions?.width ?? 0;
   const videoHeight = agentVideoTrack?.publication.dimensions?.height ?? 0;
+
+  // Responsive tile size
+  const tileSize = isMobile ? 70 : isTablet ? 80 : 90;
 
   return (
     <div className="pointer-events-none fixed inset-x-0 top-8 bottom-32 z-50 md:top-12 md:bottom-40">
@@ -123,9 +128,10 @@ export function TileLayout({ chatOpen }: TileLayoutProps) {
                     delay: animationDelay,
                   }}
                   className={cn(
-                    'bg-background aspect-square h-[90px] rounded-md border border-transparent transition-[border,drop-shadow]',
+                    `bg-background aspect-square rounded-md border border-transparent transition-[border,drop-shadow]`,
                     chatOpen && 'border-input/50 drop-shadow-lg/10 delay-200'
                   )}
+                  style={{ height: `${tileSize}px` }}
                 >
                   <BarVisualizer
                     barCount={5}

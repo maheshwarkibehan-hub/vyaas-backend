@@ -15,6 +15,7 @@ import { useChatMessages } from '@/hooks/useChatMessages';
 import { useConnectionTimeout } from '@/hooks/useConnectionTimout';
 import { useDebugMode } from '@/hooks/useDebug';
 import { cn } from '@/lib/utils';
+import { useResponsive } from '@/lib/responsive-utils';
 import { ScrollArea } from '../livekit/scroll-area/scroll-area';
 import { auth } from '@/lib/firebase';
 import { saveChatHistory, updateUserLogin } from '@/lib/supabase';
@@ -58,7 +59,8 @@ export const SessionView = ({
   useDebugMode({ enabled: IN_DEVELOPMENT });
 
   const messages = useChatMessages();
-  const [chatOpen, setChatOpen] = useState(true); // Start with chat open to show messages immediately
+  const [chatOpen, setChatOpen] = useState(true);
+  const { isMobile, isTablet, isLandscape } = useResponsive();
 
   // Subscription State
   const [credits, setCredits] = useState(0);
@@ -193,12 +195,16 @@ export const SessionView = ({
                 !chatOpen && 'pointer-events-none'
               )}
             >
-              <ScrollArea className="px-4 pt-16 pb-[200px] md:px-6 md:pb-[250px]">
+              <ScrollArea className={cn(
+                "pt-16",
+                isMobile ? "px-3 pb-[180px]" : isTablet ? "px-5 pb-[220px]" : "px-6 pb-[250px]"
+              )}>
                 <ChatTranscript
                   hidden={false}
                   messages={messages}
                   className={cn(
-                    "mx-auto max-w-4xl space-y-4",
+                    "mx-auto space-y-3",
+                    isMobile ? "max-w-full" : isTablet ? "max-w-3xl" : "max-w-4xl",
                     !chatOpen && "pointer-events-none"
                   )}
                 />
@@ -207,11 +213,17 @@ export const SessionView = ({
           </div>
 
           {/* Control Bar */}
-          <div className="fixed bottom-0 left-0 right-0 z-50 p-4 border-t border-white/10 bg-black/10 backdrop-blur-md">
+          <div className={cn(
+            "fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-black/10 backdrop-blur-md",
+            isMobile ? "p-2" : "p-4"
+          )}>
             {appConfig.isPreConnectBufferEnabled && (
               <PreConnectMessage messages={messages} className="pb-4" />
             )}
-            <div className="mx-auto max-w-4xl">
+            <div className={cn(
+              "mx-auto",
+              isMobile ? "max-w-full" : isTablet ? "max-w-3xl" : "max-w-4xl"
+            )}>
               <Fade bottom className="absolute inset-x-0 top-0 h-4 -translate-y-full" />
               <AgentControlBar
                 controls={controls}

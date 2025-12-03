@@ -40,10 +40,6 @@ export function useRoom(appConfig: AppConfig) {
   const tokenSource = useMemo(
     () =>
       TokenSource.custom(async () => {
-        console.log('Debug URL:', {
-          endpoint: process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT,
-          origin: window.location.origin
-        });
         const url = new URL(
           process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details',
           window.location.origin
@@ -72,7 +68,7 @@ export function useRoom(appConfig: AppConfig) {
         } catch (error) {
           console.error('Error fetching connection details:', error);
           const err = error as Error;
-          alert(`Connection Error:\nURL: ${url.toString()}\nError: ${err.message}\nName: ${err.name}`);
+          // Removed debug alert - errors will be shown via toast notifications
           throw new Error(`Error fetching connection details! ${err.message}`);
         }
       }),
