@@ -38,9 +38,9 @@ async def entrypoint(ctx: agents.JobContext):
     await session.start(
         room=ctx.room,
         agent=Assistant(chat_ctx=current_ctx), #sending currenet chat to llm in realtime
-        room_input_options=RoomInputOptions(
-            noise_cancellation=noise_cancellation.BVC()
-        ),
+        # room_input_options=RoomInputOptions(
+        #     noise_cancellation=noise_cancellation.BVC()
+        # ),
     )
 
     # Wait for 2 seconds to allow Android audio to initialize
